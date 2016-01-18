@@ -71,7 +71,7 @@ function rhd_related_posts()
 				if ( has_post_thumbnail() ) {
 					$output .= get_the_post_thumbnail( $post->ID, 'square-thumb' );
 				} else {
-					$output .= "<img class='related-thumb-default' src='" . RHD_REL_DIR . "/img/default-thumbnail.jpg' alt='$title'>\n";
+					$output .= "<img class='related-thumb-default' src='" . RHD_REL_DIR . "img/default-thumbnail.png' alt='$title'>\n";
 				}
 
 				$output .= "<p class='related-title'>$title</p>\n"
