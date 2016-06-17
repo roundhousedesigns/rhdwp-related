@@ -4,23 +4,10 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.0
+ * Version: 1.1
  */
 
 define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
-
-
-/**
- * rhd_related_image_sizes function.
- *
- * @access public
- * @return void
- */
-function rhd_related_image_sizes()
-{
-	add_image_size( 'square-thumb', 300, 300, true );
-}
-add_action( 'after_setup_theme', 'rhd_related_image_sizes' );
 
 
 /**
@@ -38,11 +25,12 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
 
 /**
  * rhd_related_posts function.
- *
+ * 
  * @access public
+ * @param string $orderby (default: 'rand')
  * @return void
  */
-function rhd_related_posts()
+function rhd_related_posts( $orderby = 'rand' )
 {
 	global $post;
 	$tags = wp_get_post_tags( $post->ID );
@@ -53,7 +41,8 @@ function rhd_related_posts()
 		$args = array(
 			'tag' => $tag_arr,
 			'numberposts' => 4,
-			'post__not_in' => array( $post->ID )
+			'post__not_in' => array( $post->ID ),
+			'orderby' => $orderby
 		);
 		$related_posts = get_posts( $args );
 		if ( $related_posts ) {
@@ -69,7 +58,7 @@ function rhd_related_posts()
 						. "<a class='related-link' href='$permalink' rel='bookmark'>\n";
 
 				if ( has_post_thumbnail() ) {
-					$output .= get_the_post_thumbnail( $post->ID, 'square-thumb' );
+					$output .= get_the_post_thumbnail( $post->ID, 'square' );
 				} else {
 					$output .= "<img class='related-thumb-default' src='" . RHD_REL_DIR . "img/default-thumbnail.png' alt='$title'>\n";
 				}
