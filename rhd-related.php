@@ -4,7 +4,7 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.1
+ * Version: 1.2
  */
 
 define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
@@ -28,12 +28,14 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
  * 
  * @access public
  * @param string $orderby (default: 'rand')
+ * @param mixed $days (default: null) number of days to search back
  * @return void
  */
-function rhd_related_posts( $orderby = 'rand' )
+function rhd_related_posts( $orderby = 'rand', $days = null )
 {
 	global $post;
 	$tags = wp_get_post_tags( $post->ID );
+	
 	if ( $tags ) {
 		foreach( $tags as $tag ) {
 			$tag_arr .= $tag->slug . ',';
@@ -44,6 +46,12 @@ function rhd_related_posts( $orderby = 'rand' )
 			'post__not_in' => array( $post->ID ),
 			'orderby' => $orderby
 		);
+		
+		if ( $days ) {
+			$range = date( 'Y-m-d', strtotime( "-{$days} days" ) );
+			$args['date_query'] = array( array( 'after' => $range ) );
+		}
+		
 		$related_posts = get_posts( $args );
 		if ( $related_posts ) {
 			$output = "<div id='rhd-related-posts-container'>\n"
