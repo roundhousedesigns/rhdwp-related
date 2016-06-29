@@ -19,22 +19,15 @@
   margin-bottom: 0.75em;
   vertical-align: top;
 }
-#rhd-related-posts-container .rhd-related-posts-title {
-  font-size: 1.3em;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 400;
-}
-#rhd-related-posts-container #rhd-related-posts .related-post .related-link img {
+#rhd-related-posts-container #rhd-related-posts .related-post img {
   width: 100%;
   height: auto;
   margin: 0 auto;
 }
-#rhd-related-posts-container #rhd-related-posts .related-post .related-link .related-title {
+#rhd-related-posts-container #rhd-related-posts .related-post .related-title {
   margin: 0.25em 0 0 0;
   text-align: center;
   line-height: 1.1;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 400;
 }
 @media screen and (min-width: 40rem) {
   #rhd-related-posts-container #rhd-related-posts {
@@ -43,8 +36,5 @@
   #rhd-related-posts-container #rhd-related-posts .related-post {
     width: 23%;
     margin-bottom: 0;
-  }
-  #rhd-related-posts-container #rhd-related-posts .related-post .rhd-related-posts-title {
-    font-size: 1.3em;
   }
 }
