@@ -6,6 +6,7 @@
   list-style: none;
   padding-left: 0;
   text-align: justify;
+  margin: 0;
 }
 #rhd-related-posts-container #rhd-related-posts:after {
   width: 100%;
@@ -20,6 +21,8 @@
 }
 #rhd-related-posts-container .rhd-related-posts-title {
   font-size: 1.3em;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
 }
 #rhd-related-posts-container #rhd-related-posts .related-post .related-link img {
   width: 100%;
@@ -29,8 +32,9 @@
 #rhd-related-posts-container #rhd-related-posts .related-post .related-link .related-title {
   margin: 0.25em 0 0 0;
   text-align: center;
-  color: #000;
   line-height: 1.1;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
 }
 @media screen and (min-width: 40rem) {
   #rhd-related-posts-container #rhd-related-posts {
