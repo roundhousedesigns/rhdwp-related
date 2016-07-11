@@ -62,16 +62,15 @@ function rhd_related_posts( $orderby = 'rand', $days = null )
 				$title = get_the_title();
 				$permalink = get_the_permalink();
 
-				$output .= "<li class='related-post'>\n"
-						. "<a class='related-link' href='$permalink' rel='bookmark'>\n";
+				$output .= "<li class='related-post'>\n";
 
 				if ( has_post_thumbnail() ) {
 					$output .= get_the_post_thumbnail( $post->ID, 'square' );
 				} else {
-					$output .= "<img class='related-thumb-default' src='" . RHD_REL_DIR . "img/default-thumbnail.png' alt='$title'>\n";
+					$output .= "<a href='$permalink' rel='bookmark'><img class='related-thumb-default' src='" . RHD_REL_DIR . "img/default-thumbnail.png' alt='$title'></a>\n";
 				}
 
-				$output .= "<p class='related-title'>$title</p>\n"
+				$output .= "<p class='related-title'><a class='related-link' href='$permalink' rel='bookmark'>$title</a></p>\n"
 						. "</a>\n</li>\n";
 			endforeach;
 
