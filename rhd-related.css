@@ -19,7 +19,9 @@
   vertical-align: top;
 }
 #rhd-related-posts-container .rhd-related-posts-title {
-  font-size: 1.3em;
+  font-size: 2.3em;
+  font-family: 'Tuesday Script', cursive;
+  margin: 0.5em 0;
 }
 #rhd-related-posts-container #rhd-related-posts .related-post .related-link img {
   width: 100%;
