@@ -29,9 +29,10 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
  * @access public
  * @param string $orderby (default: 'rand')
  * @param mixed $days (default: null) number of days to search back
+ * @param int $ppp (default: 4) posts per page
  * @return void
  */
-function rhd_related_posts( $orderby = 'rand', $days = null )
+function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4 )
 {
 	global $post;
 	$tags = wp_get_post_tags( $post->ID );
@@ -42,7 +43,7 @@ function rhd_related_posts( $orderby = 'rand', $days = null )
 		}
 		$args = array(
 			'tag' => $tag_arr,
-			'numberposts' => 4,
+			'posts_per_page' => $ppp,
 			'post__not_in' => array( $post->ID ),
 			'orderby' => $orderby
 		);
