@@ -4,7 +4,7 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.2
+ * Version: 1.21
  */
 
 define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
