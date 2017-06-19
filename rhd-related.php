@@ -4,7 +4,7 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.21
+ * Version: 1.22
  */
 
 define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
@@ -25,14 +25,15 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
 
 /**
  * rhd_related_posts function.
- *
+ * 
  * @access public
  * @param string $orderby (default: 'rand')
- * @param mixed $days (default: null) number of days to search back
- * @param int $ppp (default: 4) posts per page
+ * @param mixed $days (default: null)
+ * @param int $ppp (default: 4)
+ * @param string $text (default: "You May Also Like...")
  * @return void
  */
-function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4 )
+function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like..." )
 {
 	global $post;
 	$tags = wp_get_post_tags( $post->ID );
@@ -56,7 +57,7 @@ function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4 )
 		$related_posts = get_posts( $args );
 		if ( $related_posts ) {
 			$output = "<div id='rhd-related-posts-container'>\n"
-					. "<h4 class='rhd-related-posts-title'>You May Also Like...</h4>\n"
+					. "<h4 class='rhd-related-posts-title'>{$text}</h4>\n"
 					. "<ul id='rhd-related-posts'>\n";
 
 			foreach ( $related_posts as $post ) : setup_postdata( $GLOBALS['post'] =& $post );
