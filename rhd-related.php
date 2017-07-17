@@ -4,7 +4,7 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.22
+ * Version: 1.23
  */
 
 define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
@@ -37,6 +37,8 @@ function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "
 {
 	global $post;
 	$tags = wp_get_post_tags( $post->ID );
+
+	$tag_arr = '';
 
 	if ( $tags ) {
 		foreach( $tags as $tag ) {
