@@ -4,27 +4,27 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.3
+ * Version: 1.4
  */
 
-define( 'RHD_REL_DIR', plugin_dir_url(__FILE__) );
+define( 'RHDWP_REL_DIR', plugin_dir_url(__FILE__) );
 
 
 /**
- * rhd_related_enqueue_styles function.
+ * rhdwp_related_enqueue_styles function.
  *
  * @access public
  * @return void
  */
-function rhd_related_enqueue_styles()
+function rhdwp_related_enqueue_styles()
 {
-	wp_enqueue_style( 'rhd-related', RHD_REL_DIR . '/rhd-related.css', null, null, 'all' );
+	wp_enqueue_style( 'rhd-related', RHDWP_REL_DIR . '/rhd-related.css', null, null, 'all' );
 }
-add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
 
 
 /**
- * rhd_related_posts function.
+ * rhdwp_related_posts function.
  * 
  * @access public
  * @param string $orderby (default: 'rand')
@@ -34,12 +34,12 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
  * @param int $expire (default: MONTH_IN_SECONDS) Transient expiration
  * @return void
  */
-function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS )
+function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS )
 {
 	global $post;
 	
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
-	if ( false === ( $related_posts = get_transient( 'rhd_related_posts_' . $post->ID ) ) ) {
+	if ( false === ( $related_posts = get_transient( 'rhdwp_related_posts_' . $post->ID ) ) ) {
 		$tags = wp_get_post_tags( $post->ID );
 	
 		$tag_arr = '';
@@ -61,7 +61,7 @@ function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "
 			}
 
 			$related_posts = new WP_Query( $args );
-			set_transient( 'rhd_related_posts_' . $post->ID, $related_posts, $expire );
+			set_transient( 'rhdwp_related_posts_' . $post->ID, $related_posts, $expire );
 		}
 	}
 	?>	
@@ -78,7 +78,7 @@ function rhd_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "
 							if ( has_post_thumbnail() ) {
 								echo get_the_post_thumbnail( $post->ID, 'square' );
 							} else {
-								echo '<img class="related-thumb-default" src="' . RHD_REL_DIR . 'img/default-thumbnail.png" alt="' . get_the_title() . '">';
+								echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR . 'img/default-thumbnail.png" alt="' . get_the_title() . '">';
 							}
 							?>
 						</a>
