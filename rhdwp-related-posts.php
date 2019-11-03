@@ -1,30 +1,29 @@
 <?php
 /**
- * Plugin Name: RHD Related Posts
+ * Plugin Name: RHDWP Related Posts
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.4
+ * Version: 1.5
  */
 
-define( 'RHDWP_REL_DIR', plugin_dir_url(__FILE__) );
+define( 'RHDWP_REL_DIR', plugin_dir_url( __FILE__ ) );
 
 
 /**
- * rhdwp_related_enqueue_styles function.
+ * Enqueue styles and scripts
  *
  * @access public
  * @return void
  */
-function rhdwp_related_enqueue_styles()
-{
-	wp_enqueue_style( 'rhd-related', RHDWP_REL_DIR . '/rhd-related.css', null, null, 'all' );
+function rhdwp_related_enqueue_styles() {
+	wp_enqueue_style( 'rhdwp-related-css', RHDWP_REL_DIR . '/rhdwp-related-posts.css', null, null, 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
 
 
 /**
- * rhdwp_related_posts function.
+ * Main output function
  * 
  * @access public
  * @param string $orderby (default: 'rand')
@@ -34,8 +33,7 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @param int $expire (default: MONTH_IN_SECONDS) Transient expiration
  * @return void
  */
-function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS )
-{
+function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS ) {
 	global $post;
 	
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
@@ -67,9 +65,9 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 	?>	
 	
 	<?php if ( $related_posts && $related_posts->have_posts() ) : ?>
-		<div id="rhd-related-posts-container">
-			<h4 class="rhd-related-posts-title"><?php echo $text; ?></h4>
-			<ul id="rhd-related-posts">
+		<div class="rhdwp-related-posts-container">
+			<h4 class="rhdwp-related-posts-title"><?php echo $text; ?></h4>
+			<ul class="rhdwp-related-posts">
 
 				<?php while( $related_posts->have_posts() ) : $related_posts->the_post(); ?>
 					<li class="related-post">
@@ -78,7 +76,7 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 							if ( has_post_thumbnail() ) {
 								echo get_the_post_thumbnail( $post->ID, 'square' );
 							} else {
-								echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR . 'img/default-thumbnail.png" alt="' . get_the_title() . '">';
+								echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR . 'img/default-thumbnail.png" alt="' . get_the_title() . '" data-pin-nopin="true">';
 							}
 							?>
 						</a>
