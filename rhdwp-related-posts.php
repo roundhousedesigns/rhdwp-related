@@ -4,7 +4,7 @@
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
- * Version: 1.5
+ * Version: 1.5.1
  */
 
 define( 'RHDWP_REL_DIR', plugin_dir_url( __FILE__ ) );
@@ -74,7 +74,7 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 						<a href="<?php the_permalink(); ?>" rel="bookmark">
 							<?php
 							if ( has_post_thumbnail() ) {
-								echo get_the_post_thumbnail( $post->ID, 'square' );
+								echo get_the_post_thumbnail( $post->ID, 'grid', array( 'data-pin-nopin' => 'true' ) );
 							} else {
 								echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR . 'img/default-thumbnail.png" alt="' . get_the_title() . '" data-pin-nopin="true">';
 							}
