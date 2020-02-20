@@ -29,12 +29,15 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @param string $orderby (default: 'rand')
  * @param mixed $days (default: null)
  * @param int $ppp (default: 4)
- * @param string $text (default: "You May Also Like...")
+ * @param string $text (default: "You May Also Like...") Display heading text
  * @param int $expire (default: MONTH_IN_SECONDS) Transient expiration
  * @return void
  */
 function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS ) {
 	global $post;
+
+	// Sanitize $text
+	$text = strip_tags( __( $text, 'rhdwp' ) );
 	
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
 	if ( false === ( $related_posts = get_transient( 'rhdwp_related_posts_' . $post->ID ) ) ) {
