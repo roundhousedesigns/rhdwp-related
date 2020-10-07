@@ -17,7 +17,7 @@ define( 'RHDWP_REL_DIR', plugin_dir_url( __FILE__ ) );
  * @return void
  */
 function rhdwp_related_enqueue_styles() {
-	wp_enqueue_style( 'rhdwp-related-css', RHDWP_REL_DIR . '/rhdwp-related.css', null, null, 'all' );
+	wp_enqueue_style( 'rhdwp-related-css', RHDWP_REL_DIR . 'rhdwp-related.css', null, null, 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
 
