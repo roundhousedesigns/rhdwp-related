@@ -25,9 +25,9 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * Main output function
  * 
  * @access public
- * @param string $orderby (default: 'rand')
- * @param mixed $days (default: null)
- * @param int $ppp (default: 4)
+ * @param string $orderby (default: 'rand') Ordering
+ * @param mixed $days (default: null) Date range
+ * @param int $ppp (default: 4) Posts per page
  * @param string $text (default: "You May Also Like...") Display heading text
  * @param int $expire (default: MONTH_IN_SECONDS) Transient expiration
  * @return void
@@ -107,7 +107,7 @@ function rhdwp_related_posts_content_hook( $content ) {
 	}
 
 	ob_start();
-	rhdwp_related_posts();
+	rhdwp_related_posts( 'rand', null, 4, "Related Posts" );
 
 	return $content . ob_get_clean();
 }
