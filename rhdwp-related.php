@@ -9,7 +9,6 @@
 
 define( 'RHDWP_REL_DIR', plugin_dir_url( __FILE__ ) );
 
-
 /**
  * Enqueue styles and scripts
  *
@@ -95,3 +94,21 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 	<?php endif; ?>
 	<?php wp_reset_postdata();
 }
+
+/**
+ * Inserts the Related Posts block after post content.
+ *
+ * @param string $content
+ * @return string The html output
+ */
+function rhdwp_related_posts_content_hook( $content ) {
+	if ( get_post_type() !== 'post' ) {
+		return $content;
+	}
+
+	ob_start();
+	rhdwp_related_posts();
+
+	return $content . ob_get_clean();
+}
+add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
