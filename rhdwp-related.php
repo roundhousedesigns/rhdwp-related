@@ -9,6 +9,7 @@
 
 define( 'RHDWP_REL_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'RHDWP_REL_DIR', plugin_dir_path( __FILE__ ) );
+define( 'RHDWP_RELATED_CACHE_PREFIX', 'rhdwp_related_posts_' );
 
 /**
  * Enqueue styles and scripts
@@ -29,17 +30,17 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @param mixed $days (default: null) Date range
  * @param int $ppp (default: 4) Posts per page
  * @param string $text (default: "You May Also Like...") Display heading text
- * @param int $expire (default: MONTH_IN_SECONDS) Transient expiration
+ * @param int $expire (default: DAY_IN_SECONDS) Transient expiration
  * @return void
  */
-function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = MONTH_IN_SECONDS ) {
+function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = DAY_IN_SECONDS ) {
 	global $post;
 
 	// Sanitize $text
 	$text = strip_tags( __( $text, 'rhdwp' ) );
 
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
-	if ( false === ( $related_posts = get_transient( 'rhdwp_related_posts_' . $post->ID ) ) ) {
+	if ( false === ( $related_posts = get_transient( RHDWP_RELATED_CACHE_PREFIX . $post->ID ) ) ) {
 		$tags = wp_get_post_tags( $post->ID );
 
 		$tag_arr = '';
@@ -61,7 +62,7 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 			}
 
 			$related_posts = new WP_Query( $args );
-			set_transient( 'rhdwp_related_posts_' . $post->ID, $related_posts, $expire );
+			set_transient( RHDWP_RELATED_CACHE_PREFIX . $post->ID, $related_posts, $expire );
 		}
 	}
 
@@ -100,4 +101,26 @@ function rhdwp_related_posts_content_hook( $content ) {
 
 	return $content . ob_get_clean();
 }
-add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
+// add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
+
+/**
+ * Deletes all RHDWP Related trasients.
+ *
+ * @param string $post_type The post type to query.
+ * @return void
+ */
+function rhdwp_related_posts_flush_cache( $post_id, $post, $update ) {
+	$posts = get_posts( array(
+		'post_type'      => $post->post_type,
+		'posts_per_page' => -1,
+		'post_status'    => 'publish',
+	) );
+
+	foreach ( $posts as $post ) {
+		$cache_key = RHDWP_RELATED_CACHE_PREFIX . $post->ID;
+		if ( get_transient( $cache_key ) ) {
+			delete_transient( $cache_key );
+		}
+	}
+}
+add_action( 'save_post', 'rhdwp_related_posts_flush_cache', 10, 3 );
