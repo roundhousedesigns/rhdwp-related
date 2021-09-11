@@ -4,7 +4,7 @@
 		if ( has_post_thumbnail() ) {
 			echo get_the_post_thumbnail( $post->ID, 'grid', array( 'data-pin-nopin' => 'true' ) );
 		} else {
-			echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR_URL . 'img/default-thumbnail.png" alt="' . get_the_title() . '" data-pin-nopin="true">';
+			echo '<img class="related-thumb-default" src="' . RHDWP_RELATED_DIR_URL . 'img/default-thumbnail.png" alt="' . get_the_title() . '" data-pin-nopin="true">';
 		}
 		?>
 	</a>
