@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: RHD Related Posts
+ * Plugin Name: RHDWP Related Posts
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
