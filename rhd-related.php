@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: RHDWP Related Posts
+ * Plugin Name: RHD Related Posts
  * Description: Simple "related posts" plugin.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
@@ -9,10 +9,10 @@
  * @package RHD
  */
 
-define( 'RHDWP_RELATED_VERSION', '1.7' );
-define( 'RHDWP_RELATED_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'RHDWP_RELATED_DIR', plugin_dir_path( __FILE__ ) );
-define( 'RHDWP_RELATED_CACHE_PREFIX', 'rhdwp_related_posts_' );
+define( 'RHD_RELATED_VERSION', '1.7' );
+define( 'RHD_RELATED_DIR_URL', plugin_dir_url( __FILE__ ) );
+define( 'RHD_RELATED_DIR', plugin_dir_path( __FILE__ ) );
+define( 'RHD_RELATED_CACHE_PREFIX', 'rhd_related_posts_' );
 
 /**
  * Enqueue styles and scripts
@@ -20,16 +20,17 @@ define( 'RHDWP_RELATED_CACHE_PREFIX', 'rhdwp_related_posts_' );
  * @access public
  * @return void
  */
-function rhdwp_related_enqueue_styles() {
-	wp_enqueue_style( 'rhdwp-related-css', RHDWP_RELATED_DIR_URL . 'rhdwp-related.css', null, RHDWP_RELATED_VERSION, 'all' );
+function rhd_related_enqueue_styles() {
+	wp_enqueue_style( 'rhd-related-css', RHD_RELATED_DIR_URL . 'rhd-related.css', null, RHD_RELATED_VERSION, 'all' );
 }
-add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
 
 /**
  * Main output function
  *
  * @access public
  * @param int    $id Post id. Defaults to post in the loop.
+ * @param string $taxonomy (default: 'post_tag') The taxonomy to use as the comparision basis.
  * @param string $orderby (default: 'rand') Ordering.
  * @param mixed  $days (default: null) Date range.
  * @param int    $ppp (default: 4) Posts per page.
@@ -37,22 +38,29 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @param int    $expire (default: DAY_IN_SECONDS) Transient expiration.
  * @return void
  */
-function rhdwp_related_posts( $id = null, $orderby = 'rand', $days = null, $ppp = 4, $text = 'You May Also Like...', $expire = DAY_IN_SECONDS ) {
+function rhd_related_posts( $id = null, $taxonomy = 'post_tag', $orderby = 'rand', $days = null, $ppp = 4, $text = 'You May Also Like...', $expire = DAY_IN_SECONDS ) {
 	$id = $id ? $id : get_the_id();
 
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
-	$related_posts = get_transient( RHDWP_RELATED_CACHE_PREFIX . $id );
+	$related_posts = get_transient( RHD_RELATED_CACHE_PREFIX . $id );
 	if ( false === $related_posts ) {
-		$tags = wp_get_post_tags( $id );
+		$terms      = wp_get_post_terms( $id, $taxonomy );
+		$term_slugs = array_map(
+			function ( $term ) {
+				return $term->term_id;
+			},
+			$terms
+		);
 
-		$tag_arr = '';
-
-		if ( $tags ) {
-			foreach ( $tags as $tag ) {
-				$tag_arr .= $tag->slug . ',';
-			}
+		if ( $terms ) {
 			$args = array(
-				'tag'            => $tag_arr,
+				'tax_query'      => array(  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy' => $taxonomy,
+						'field'    => 'term_id',
+						'terms'    => $term_slugs,
+					),
+				),
 				'posts_per_page' => $ppp,
 				'post__not_in'   => array( $id ),
 				'orderby'        => $orderby,
@@ -64,22 +72,22 @@ function rhdwp_related_posts( $id = null, $orderby = 'rand', $days = null, $ppp 
 			}
 
 			$related_posts = new WP_Query( $args );
-			set_transient( RHDWP_RELATED_CACHE_PREFIX . $id, $related_posts, $expire );
+			set_transient( RHD_RELATED_CACHE_PREFIX . $id, $related_posts, $expire );
 		}
 	}
 
 	if ( $related_posts && $related_posts->have_posts() ) :
 		printf(
-			'<div class="rhdwp-related-posts-container"><h4 class="rhdwp-related-posts-title">%s</h4><ul class="rhdwp-related-posts">',
-			esc_textarea( $text, 'rhdwp' )
+			'<div class="rhd-related-posts-container"><h4 class="rhd-related-posts-title">%s</h4><ul class="rhd-related-posts">',
+			esc_textarea( $text, 'rhd' )
 		);
 
 		while ( $related_posts->have_posts() ) {
 			$related_posts->the_post();
-			if ( locate_template( 'rhdwp-related.php' ) ) {
-				get_template_part( 'rhdwp-related' );
+			if ( locate_template( 'rhd-related.php' ) ) {
+				get_template_part( 'rhd-related' );
 			} else {
-				include RHDWP_RELATED_DIR . 'template.php';
+				include RHD_RELATED_DIR . 'template.php';
 			}
 		}
 
@@ -94,28 +102,28 @@ function rhdwp_related_posts( $id = null, $orderby = 'rand', $days = null, $ppp 
  * @param string $content The post content.
  * @return string The html output.
  */
-function rhdwp_related_posts_content_hook( $content ) {
+function rhd_related_posts_content_hook( $content ) {
 	if ( get_post_type() !== 'post' ) {
 		return $content;
 	}
 
 	ob_start();
-	rhdwp_related_posts( 'rand', null, 4, 'Related Posts' );
+	rhd_related_posts( 'rand', null, 4, 'Related Posts' );
 
 	return $content . ob_get_clean();
 }
 // phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar,Squiz.PHP.CommentedOutCode.Found
-// add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
+// add_action( 'the_content', 'rhd_related_posts_content_hook' );
 
 /**
- * Deletes all RHDWP Related trasients.
+ * Deletes all RHD Related trasients.
  *
  * @param int     $id The post ID.
  * @param WP_Post $post The post object.
  * @param boolean $update Whether this is an existing post being updated.
  * @return void
  */
-function rhdwp_related_posts_flush_cache( $id, $post, $update ) {
+function rhd_related_posts_flush_cache( $id, $post, $update ) {
 	$posts = get_posts(
 		array(
 			'post_type'      => $post->post_type,
@@ -125,10 +133,10 @@ function rhdwp_related_posts_flush_cache( $id, $post, $update ) {
 	);
 
 	foreach ( $posts as $post ) {
-		$cache_key = RHDWP_RELATED_CACHE_PREFIX . $post->ID;
+		$cache_key = RHD_RELATED_CACHE_PREFIX . $post->ID;
 		if ( get_transient( $cache_key ) ) {
 			delete_transient( $cache_key );
 		}
 	}
 }
-add_action( 'save_post', 'rhdwp_related_posts_flush_cache', 10, 3 );
+add_action( 'save_post', 'rhd_related_posts_flush_cache', 10, 3 );
