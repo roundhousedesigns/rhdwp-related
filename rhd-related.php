@@ -36,9 +36,19 @@ add_action( 'wp_enqueue_scripts', 'rhd_related_enqueue_styles' );
  * @param int    $ppp (default: 4) Posts per page.
  * @param string $text (default: "You May Also Like...") Display heading text.
  * @param int    $expire (default: DAY_IN_SECONDS) Transient expiration.
+ * @param array  $extra_args Additional WP_Query parameters (default: empty array)
  * @return void
  */
-function rhd_related_posts( $id = null, $taxonomy = 'post_tag', $orderby = 'rand', $days = null, $ppp = 4, $text = 'You May Also Like...', $expire = DAY_IN_SECONDS ) {
+function rhd_related_posts(
+	$id = null,
+	$taxonomy = 'post_tag',
+	$orderby = 'rand',
+	$days = null,
+	$ppp = 4,
+	$text = 'You May Also Like...',
+	$expire = DAY_IN_SECONDS,
+	$extra_args = array()
+) {
 	$id = $id ? $id : get_the_id();
 
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
@@ -66,6 +76,15 @@ function rhd_related_posts( $id = null, $taxonomy = 'post_tag', $orderby = 'rand
 				'orderby'        => $orderby,
 			);
 
+			ob_start();
+			print_r( $args );
+			error_log( ob_get_clean() );
+			
+			$args = ! empty( $extra_args ) ? array_merge( $args, $extra_args ) : $args;
+			ob_start();
+			print_r( $args );
+			error_log( ob_get_clean() );
+
 			if ( $days ) {
 				$range              = gmdate( 'Y-m-d', strtotime( "-{$days} days" ) );
 				$args['date_query'] = array( array( 'after' => $range ) );
@@ -76,9 +95,9 @@ function rhd_related_posts( $id = null, $taxonomy = 'post_tag', $orderby = 'rand
 		}
 	}
 
-	if ( $related_posts && $related_posts->have_posts() ) :
+	if ( $related_posts && $related_posts->have_posts() ):
 		printf(
-			'<div class="rhd-related-posts-container"><h4 class="rhd-related-posts-title">%s</h4><ul class="rhd-related-posts">',
+			'<div class="rhd-related-posts-container"><h4 class="rhd-related-posts-title"><span>%s</span></h4><ul class="rhd-related-posts">',
 			esc_textarea( $text, 'rhd' )
 		);
 
