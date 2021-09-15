@@ -76,14 +76,7 @@ function rhd_related_posts(
 				'orderby'        => $orderby,
 			);
 
-			ob_start();
-			print_r( $args );
-			error_log( ob_get_clean() );
-			
 			$args = ! empty( $extra_args ) ? array_merge( $args, $extra_args ) : $args;
-			ob_start();
-			print_r( $args );
-			error_log( ob_get_clean() );
 
 			if ( $days ) {
 				$range              = gmdate( 'Y-m-d', strtotime( "-{$days} days" ) );
