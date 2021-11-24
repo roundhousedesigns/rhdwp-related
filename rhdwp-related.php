@@ -26,14 +26,15 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * Main output function
  *
  * @access public
- * @param string $orderby (default: 'rand') Ordering
- * @param mixed $days (default: null) Date range
- * @param int $ppp (default: 4) Posts per page
- * @param string $text (default: "You May Also Like...") Display heading text
- * @param int $expire (default: DAY_IN_SECONDS) Transient expiration
+ * @param string $orderby (default: 'rand') Ordering.
+ * @param mixed $days (default: null) Date range.
+ * @param int $ppp (default: 4) Posts per page.
+ * @param string $text (default: "You May Also Like...") Display heading text.
+ * @param int $expire (default: DAY_IN_SECONDS) Transient expiration.
+ * @param string $size (default: medium) Thumbnail size.
  * @return void
  */
-function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = DAY_IN_SECONDS ) {
+function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = DAY_IN_SECONDS, $size = 'medium' ) {
 	global $post;
 
 	// Sanitize $text
@@ -74,8 +75,9 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 
 		while ( $related_posts->have_posts() ): $related_posts->the_post();
 			if ( locate_template( 'rhdwp-related.php' ) ) {
-				get_template_part( 'rhdwp-related' );
+				get_template_part( 'rhdwp-related', null, array( 'size' => $size ) );
 			} else {
+				define( 'RHDWP_RELATED_SIZE', $size );
 				include RHDWP_REL_DIR . 'template.php';
 			}
 		endwhile;
