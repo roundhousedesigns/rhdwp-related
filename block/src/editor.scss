@@ -1,0 +1,39 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-rhd-related-posts {
+	.preview {
+		flex-basis: 100%;
+	}
+}
+
+.rhd-related-posts-placeholder {
+	border: 1px solid gray;
+	height: 125px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rhd-related-posts-control {
+	padding: 0.5em;
+	background: #ccc;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+
+	& > .components-flex,
+	& > .components-base-control {
+		flex: 1;
+		padding: 0 0.5em;
+
+		label {
+			font-size: 13px;
+			padding-bottom: 4px !important;
+			margin-bottom: 0 !important;
+		}
+	}
+}

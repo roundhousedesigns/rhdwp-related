@@ -1,0 +1,30 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-rhd-related-posts {
+	margin: 2em 0;
+
+	.rhd-related-posts-title {
+		margin: 0;
+	}
+
+	.rhd-related-posts {
+		display: flex;
+		justify-content: space-between;
+		list-style: none;
+		padding-left: 0;
+
+		.related-post {
+			flex: auto;
+			margin-right: 1em;
+
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+}
