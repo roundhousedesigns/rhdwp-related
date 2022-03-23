@@ -4,7 +4,7 @@
 	"name": "rhd/related-posts",
 	"version": "2.0",
 	"title": "Related Posts",
-	"category": "rhd",
+	"category": "widgets",
 	"icon": "excerpt-view",
 	"description": "Related posts.",
 	"attributes": {
