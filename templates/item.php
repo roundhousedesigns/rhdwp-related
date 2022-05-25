@@ -7,10 +7,10 @@
  * @package RHD
  */
 
-$style = sprintf( 'width: %d%%;', (float) 100 / $_related_image_count );
+// $style = sprintf( 'width: %d%%;', (float) 100 / $_related_image_count );
 ?>
 
-<li class="related-post" style="<?php echo esc_attr( $style ); ?>">
+<li class="related-post">
 	<a href="<?php the_permalink(); ?>" rel="bookmark">
 		<?php
 		if ( has_post_thumbnail() ) {
