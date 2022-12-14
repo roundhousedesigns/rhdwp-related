@@ -27,13 +27,15 @@
 	margin: 0 auto;
 }
 
-.rhdwp-related-posts-container
-	.rhdwp-related-posts
-	.related-post
-	.related-title {
+.rhdwp-related-posts-container .rhdwp-related-posts-title {
+	margin-bottom: 0;
+	font-size: 1.4em;
+}
+
+.rhdwp-related-posts-container .rhdwp-related-posts .related-post .related-title {
 	margin: 0.25em 0 0 0;
 	text-align: center;
-	line-height: 1.1;
+	line-height: 1.2;
 }
 
 @media screen and (min-width: 40rem) {

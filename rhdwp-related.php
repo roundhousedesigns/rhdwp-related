@@ -1,11 +1,14 @@
 <?php
 /**
- * Plugin Name: RHDWP Related Posts
- * Description: Simple "related posts" plugin.
+ * Plugin Name: Related Posts
+ * Description: Display a linked collection of related posts.
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
  * Version: 1.6
  */
+
+// TODO Refactor to remove output buffering.
+// TODO alley-OOP
 
 define( 'RHDWP_REL_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'RHDWP_REL_DIR', plugin_dir_path( __FILE__ ) );
@@ -26,6 +29,7 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * Main output function
  *
  * @access public
+ * @param string $tax (default: 'tag') The taxonomy to use for comparison.
  * @param string $orderby (default: 'rand') Ordering.
  * @param mixed $days (default: null) Date range.
  * @param int $ppp (default: 4) Posts per page.
@@ -34,28 +38,42 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @param string $size (default: medium) Thumbnail size.
  * @return void
  */
-function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text = "You May Also Like...", $expire = DAY_IN_SECONDS, $size = 'medium' ) {
+function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $ppp = 4, $text = 'You May Also Like...', $expire = DAY_IN_SECONDS, $size = 'medium' ) {
 	global $post;
+
+	if ( 'tag' !== $tax && 'cat' !== $tax ) {
+		return;
+	}
 
 	// Sanitize $text
 	$text = strip_tags( __( $text, 'rhdwp' ) );
 
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
 	if ( false === ( $related_posts = get_transient( RHDWP_RELATED_CACHE_PREFIX . $post->ID ) ) ) {
-		$tags = wp_get_post_tags( $post->ID );
+		if ( 'tag' === $tax ) {
+			$terms = wp_get_post_tags( $post->ID );
+		} elseif ( 'cat' === $tax ) {
+			$terms = wp_get_post_categories( $post->ID );
+		}
 
-		$tag_arr = '';
+		$term_arr = array();
 
-		if ( $tags ) {
-			foreach ( $tags as $tag ) {
-				$tag_arr .= $tag->slug . ',';
+		if ( $terms ) {
+			foreach ( $terms as $term ) {
+				$term_arr[] = $term;
 			}
+
 			$args = array(
-				'tag'            => $tag_arr,
 				'posts_per_page' => $ppp,
 				'post__not_in'   => array( $post->ID ),
 				'orderby'        => $orderby,
 			);
+
+			if ( 'tag' === $tax ) {
+				$args['tag'] = $term_arr;
+			} elseif ( 'cat' === $tax ) {
+				$args['cat'] = $term_arr;
+			}
 
 			if ( $days ) {
 				$range              = date( 'Y-m-d', strtotime( "-{$days} days" ) );
@@ -75,9 +93,12 @@ function rhdwp_related_posts( $orderby = 'rand', $days = null, $ppp = 4, $text =
 
 		while ( $related_posts->have_posts() ): $related_posts->the_post();
 			if ( locate_template( 'rhdwp-related.php' ) ) {
+				// Theme override present.
 				get_template_part( 'rhdwp-related', null, array( 'size' => $size ) );
 			} else {
-				define( 'RHDWP_RELATED_SIZE', $size );
+				// Set up template vars.
+				$args = array( 'size' => $size );
+
 				include RHDWP_REL_DIR . 'template.php';
 			}
 		endwhile;
@@ -99,19 +120,20 @@ function rhdwp_related_posts_content_hook( $content ) {
 	}
 
 	ob_start();
-	rhdwp_related_posts( 'rand', null, 4, "Related Posts" );
+	rhdwp_related_posts( 'cat', 'rand', null, 4, 'Related Posts', DAY_IN_SECONDS, 'thumbnail' );
 
 	return $content . ob_get_clean();
 }
-// add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
+add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
 
 /**
- * Deletes all RHDWP Related trasients.
+ * Deletes trasients for single posts.
  *
+ * @param int $post_id The post ID.
  * @param string $post_type The post type to query.
  * @return void
  */
-function rhdwp_related_posts_flush_cache( $post_id, $post, $update ) {
+function rhdwp_related_posts_delete_post_from_cache( $post_id, $post, $update ) {
 	$posts = get_posts( array(
 		'post_type'      => $post->post_type,
 		'posts_per_page' => -1,
@@ -119,10 +141,10 @@ function rhdwp_related_posts_flush_cache( $post_id, $post, $update ) {
 	) );
 
 	foreach ( $posts as $post ) {
-		$cache_key = RHDWP_RELATED_CACHE_PREFIX . $post->ID;
+		$cache_key = RHDWP_RELATED_CACHE_PREFIX . $post_id;
 		if ( get_transient( $cache_key ) ) {
 			delete_transient( $cache_key );
 		}
 	}
 }
-add_action( 'save_post', 'rhdwp_related_posts_flush_cache', 10, 3 );
+add_action( 'save_post', 'rhdwp_related_posts_delete_post_from_cache', 10, 3 );
