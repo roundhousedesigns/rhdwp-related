@@ -25,6 +25,7 @@
 	width: 100%;
 	height: auto;
 	margin: 0 auto;
+	display: block;
 }
 
 .rhdwp-related-posts-container .rhdwp-related-posts-title {

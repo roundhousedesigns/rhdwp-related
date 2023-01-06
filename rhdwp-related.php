@@ -115,7 +115,7 @@ function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $pp
  * @return string The html output
  */
 function rhdwp_related_posts_content_hook( $content ) {
-	if ( get_post_type() !== 'post' ) {
+	if ( get_post_type() !== 'post' || ! is_single() ) {
 		return $content;
 	}
 

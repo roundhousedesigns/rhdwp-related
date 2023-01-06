@@ -16,9 +16,6 @@
 			echo '<img class="related-thumb-default" src="' . RHDWP_REL_DIR_URL . 'img/default-thumbnail.png" alt="' . get_the_title() . '" data-pin-nopin="true">';
 		}
 		?>
+		<p class="related-title"><?php the_title(); ?></p>
 	</a>
-
-	<p class="related-title">
-		<a class="related-link" href="<?php the_permalink(); ?>" rel="bookmark"><?php the_title(); ?></a>
-	</p>
 </li>
