@@ -5,14 +5,17 @@
  * Author: Roundhouse Designs
  * Author URI: https://roundhouse-designs.com
  * Version: 1.6
+ *
+ * @package RHD
  */
 
 // TODO Refactor to remove output buffering.
-// TODO alley-OOP
+// TODO alley-OOP.
 
 define( 'RHDWP_REL_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'RHDWP_REL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RHDWP_RELATED_CACHE_PREFIX', 'rhdwp_related_posts_' );
+define( 'RHDWP_RELATED_VERSION', '1.6' );
 
 /**
  * Enqueue styles and scripts
@@ -21,7 +24,7 @@ define( 'RHDWP_RELATED_CACHE_PREFIX', 'rhdwp_related_posts_' );
  * @return void
  */
 function rhdwp_related_enqueue_styles() {
-	wp_enqueue_style( 'rhdwp-related-css', RHDWP_REL_DIR_URL . 'rhdwp-related.css', null, null, 'all' );
+	wp_enqueue_style( 'rhdwp-related-css', RHDWP_REL_DIR_URL . 'rhdwp-related.css', null, RHDWP_RELATED_VERSION, 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
 
@@ -31,10 +34,10 @@ add_action( 'wp_enqueue_scripts', 'rhdwp_related_enqueue_styles' );
  * @access public
  * @param string $tax (default: 'tag') The taxonomy to use for comparison.
  * @param string $orderby (default: 'rand') Ordering.
- * @param mixed $days (default: null) Date range.
- * @param int $ppp (default: 4) Posts per page.
+ * @param mixed  $days (default: null) Date range.
+ * @param int    $ppp (default: 4) Posts per page.
  * @param string $text (default: "You May Also Like...") Display heading text.
- * @param int $expire (default: DAY_IN_SECONDS) Transient expiration.
+ * @param int    $expire (default: DAY_IN_SECONDS) Transient expiration.
  * @param string $size (default: medium) Thumbnail size.
  * @return void
  */
@@ -45,11 +48,12 @@ function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $pp
 		return;
 	}
 
-	// Sanitize $text
-	$text = strip_tags( __( $text, 'rhdwp' ) );
+	// Sanitize.
+	$text = wp_strip_all_tags( $text );
 
 	// Check to see if a transient has been set for this post, and if not, retrieve the data and set one.
-	if ( false === ( $related_posts = get_transient( RHDWP_RELATED_CACHE_PREFIX . $post->ID ) ) ) {
+	$related_posts = get_transient( RHDWP_RELATED_CACHE_PREFIX . $post->ID );
+	if ( false === $related_posts ) {
 		if ( 'tag' === $tax ) {
 			$terms = wp_get_post_tags( $post->ID );
 		} elseif ( 'cat' === $tax ) {
@@ -76,7 +80,7 @@ function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $pp
 			}
 
 			if ( $days ) {
-				$range              = date( 'Y-m-d', strtotime( "-{$days} days" ) );
+				$range              = gmdate( 'Y-m-d', strtotime( "-{$days} days" ) );
 				$args['date_query'] = array( array( 'after' => $range ) );
 			}
 
@@ -85,13 +89,14 @@ function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $pp
 		}
 	}
 
-	if ( $related_posts && $related_posts->have_posts() ):
+	if ( $related_posts && $related_posts->have_posts() ) :
 		printf(
 			'<div class="rhdwp-related-posts-container"><h4 class="rhdwp-related-posts-title">%s</h4><ul class="rhdwp-related-posts">',
-			__( $text, 'rhdwp' )
+			esc_html( $text )
 		);
 
-		while ( $related_posts->have_posts() ): $related_posts->the_post();
+		// phpcs:ignore Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace
+		while ( $related_posts->have_posts() ) : $related_posts->the_post();
 			if ( locate_template( 'rhdwp-related.php' ) ) {
 				// Theme override present.
 				get_template_part( 'rhdwp-related', null, array( 'size' => $size ) );
@@ -111,7 +116,7 @@ function rhdwp_related_posts( $tax = 'tag', $orderby = 'rand', $days = null, $pp
 /**
  * Inserts the Related Posts block after post content.
  *
- * @param string $content
+ * @param string $content The post content.
  * @return string The html output
  */
 function rhdwp_related_posts_content_hook( $content ) {
@@ -129,16 +134,19 @@ add_action( 'the_content', 'rhdwp_related_posts_content_hook' );
 /**
  * Deletes trasients for single posts.
  *
- * @param int $post_id The post ID.
- * @param string $post_type The post type to query.
+ * @param int     $post_id The post ID.
+ * @param WP_Post $post The post type to query.
+ * @param bool    $update Whether this is a post being updated.
  * @return void
  */
 function rhdwp_related_posts_delete_post_from_cache( $post_id, $post, $update ) {
-	$posts = get_posts( array(
-		'post_type'      => $post->post_type,
-		'posts_per_page' => -1,
-		'post_status'    => 'publish',
-	) );
+	$posts = get_posts(
+		array(
+			'post_type'      => $post->post_type,
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+		)
+	);
 
 	foreach ( $posts as $post ) {
 		$cache_key = RHDWP_RELATED_CACHE_PREFIX . $post_id;
