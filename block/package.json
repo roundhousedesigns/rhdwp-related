@@ -16,5 +16,10 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^22.2.1"
-	}
+	},
+	"resolutions": {
+		"terser": "^5.14.2",
+		"loader-utils": "^2.0.3"
+	},
+	"packageManager": "yarn@4.11.0"
 }

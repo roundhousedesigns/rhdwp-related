@@ -1,3 +1,6 @@
+# Yarn
+.yarn/install-state.gz
+
 # Logs
 logs
 *.log
